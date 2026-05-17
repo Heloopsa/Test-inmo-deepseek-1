@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export async function updateSession(request: NextRequest) {
+export function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   })
@@ -24,46 +24,34 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  try {
-    const { data } = await supabase.auth.getUser()
+  return async () => {
+    try {
+      const { data } = await supabase.auth.getUser()
 
-    // Protected routes that require authentication
-    const protectedPaths = ['/dashboard']
-    const isProtectedPath = protectedPaths.some(
-      (path) => request.nextUrl.pathname === path || request.nextUrl.pathname.startsWith(path + '/')
-    )
+      // Protected routes that require authentication
+      const protectedPaths = ['/dashboard']
+      const isProtectedPath = protectedPaths.some(
+        (path) => request.nextUrl.pathname === path || request.nextUrl.pathname.startsWith(path + '/')
+      )
 
-    if (isProtectedPath && !data.user) {
-      // No user, redirect to login
-      const url = request.nextUrl.clone()
-      url.pathname = '/auth/login'
-      url.searchParams.set('redirect', request.nextUrl.pathname)
-      return NextResponse.redirect(url)
+      if (isProtectedPath && !data.user) {
+        // No user, redirect to login
+        const url = request.nextUrl.clone()
+        url.pathname = '/auth/login'
+        url.searchParams.set('redirect', request.nextUrl.pathname)
+        return NextResponse.redirect(url)
+      }
+
+      // Redirect authenticated users away from auth pages
+      if (request.nextUrl.pathname.startsWith('/auth/') && data.user) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/dashboard'
+        return NextResponse.redirect(url)
+      }
+    } catch {
+      // Ignore errors
     }
 
-    // Redirect authenticated users away from auth pages
-    if (request.nextUrl.pathname.startsWith('/auth/') && data.user) {
-      const url = request.nextUrl.clone()
-      url.pathname = '/dashboard'
-      return NextResponse.redirect(url)
-    }
-  } catch {
-    // Ignore errors
+    return supabaseResponse
   }
-
-  return supabaseResponse
-}
-
-export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public (public files)
-     * - api (API routes)
-     */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|api).*)',
-  ],
 }

@@ -3,9 +3,6 @@ import { Home, Search, LogIn, User } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import MobileMenu from './MobileMenu'
 
-// Re-export proxy for potential future use
-export { updateSession } from '@/proxy'
-
 export default async function Navbar() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
