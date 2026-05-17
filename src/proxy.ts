@@ -24,10 +24,6 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  // IMPORTANT: Avoid writing any logic between createServerClient and
-  // supabase.auth.getUser() - just pass through the response. For example,
-  // redirecting the user, we must return the response (including the cookies) -
-  // before we can redirect.
   try {
     const { data } = await supabase.auth.getUser()
 
@@ -56,4 +52,18 @@ export async function updateSession(request: NextRequest) {
   }
 
   return supabaseResponse
+}
+
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public (public files)
+     * - api (API routes)
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|api).*)',
+  ],
 }
