@@ -36,24 +36,46 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   const { id } = await params
   const supabase = await createClient()
 
+  // First fetch just the property (avoid JOIN failures when relations are missing)
   const { data: property, error } = await supabase
     .from('properties')
-    .select(`
-      *,
-      agent:agent_id (
-        id, full_name, phone, avatar_url, agency_name, bio, license_number
-      ),
-      municipality:municipality_id (
-        id, name, slug,
-        province:province_id (name, slug)
-      )
-    `)
+    .select('*')
     .eq('id', id)
     .maybeSingle()
 
   if (error || !property) notFound()
 
   const prop = property as any
+
+  // Try to fetch agent info separately (optional)
+  let agentInfo: any = null
+  if (prop.agent_id) {
+    try {
+      const { data: agent } = await supabase
+        .from('profiles')
+        .select('id, full_name, phone, avatar_url, agency_name, bio, license_number')
+        .eq('id', prop.agent_id)
+        .single()
+      agentInfo = agent
+    } catch {}
+  }
+
+  // Try to fetch municipality separately (optional)
+  let municipalityInfo: any = null
+  if (prop.municipality_id) {
+    try {
+      const { data: mun } = await supabase
+        .from('municipalities')
+        .select('id, name, slug, province:province_id (name, slug)')
+        .eq('id', prop.municipality_id)
+        .single()
+      municipalityInfo = mun
+    } catch {}
+  }
+
+  // Attach fetched relations back to property
+  prop.agent = agentInfo
+  prop.municipality = municipalityInfo
 
   // Increment views (non-critical)
   try {
