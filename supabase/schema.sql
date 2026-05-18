@@ -81,6 +81,36 @@ create table if not exists properties (
   updated_at timestamp with time zone default now()
 );
 
+-- Fix: add columns that might be missing from previous schema runs
+do $$ begin
+  alter table properties add column if not exists description text;
+  alter table properties add column if not exists operation_type text;
+  alter table properties add column if not exists price_per_sqm numeric(10,2);
+  alter table properties add column if not exists bedrooms int;
+  alter table properties add column if not exists bathrooms int;
+  alter table properties add column if not exists parking_spaces int default 0;
+  alter table properties add column if not exists floor int default 0;
+  alter table properties add column if not exists year_built int;
+  alter table properties add column if not exists status text default 'active';
+  alter table properties add column if not exists amenities text[];
+  alter table properties add column if not exists features jsonb;
+  alter table properties add column if not exists address text;
+  alter table properties add column if not exists latitude numeric(10,8);
+  alter table properties add column if not exists longitude numeric(11,8);
+  alter table properties add column if not exists municipality_id int references municipalities(id);
+  alter table properties add column if not exists neighborhood text;
+  alter table properties add column if not exists building_name text;
+  alter table properties add column if not exists condo_fee numeric(10,2);
+  alter table properties add column if not exists energy_cert text;
+  alter table properties add column if not exists photos text[];
+  alter table properties add column if not exists virtual_tour_url text;
+  alter table properties add column if not exists is_featured boolean default false;
+  alter table properties add column if not exists is_verified boolean default false;
+  alter table properties add column if not exists views_count int default 0;
+  alter table properties add column if not exists updated_at timestamp with time zone default now();
+exception when others then null;
+end $$;
+
 -- =============================================
 -- Leads / Inquisiciones
 -- =============================================
