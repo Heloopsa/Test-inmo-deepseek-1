@@ -61,10 +61,6 @@ export default function EditPropertyPage() {
   const [uploadingPhotos, setUploadingPhotos] = useState(false)
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([])
 
-  useEffect(() => {
-    loadProperty()
-  }, [])
-
   const loadProperty = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -107,6 +103,10 @@ export default function EditPropertyPage() {
       setIsLoading(false)
     }
   }
+
+  useEffect(() => {
+    loadProperty()
+  }, [])
 
   const toggleAmenity = (value: string) => {
     setSelectedAmenities(prev =>

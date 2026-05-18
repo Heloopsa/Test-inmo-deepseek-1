@@ -7,6 +7,7 @@ import PropertyMap from '@/components/PropertyMap'
 import PropertyContact from '@/components/PropertyContact'
 import PropertyActions from '@/components/PropertyActions'
 import { createClient } from '@/lib/supabase/server'
+import type { Property, Profile, Municipality, Province } from '@/types/database.types'
 import {
   BedDouble, Bath, Ruler, MapPin, Car, ArrowLeft, Heart, Share2,
   CheckCircle2, Building2, Calendar, Layers, Zap, Home,
@@ -14,6 +15,12 @@ import {
 
 interface PageProps {
   params: Promise<{ id: string }>
+}
+
+// Extended property type with optional relations
+interface PropertyWithRelations extends Property {
+  agent: Profile | null
+  municipality: (Municipality & { province: { name: string; slug: string } | null }) | null
 }
 
 const propertyTypeLabels: Record<string, string> = {
@@ -46,23 +53,26 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
   if (error || !property) notFound()
 
-  const prop = property as any
+  // Build property with relations (optional queries avoid JOIN failures)
+  const prop: PropertyWithRelations = {
+    ...property,
+    agent: null,
+    municipality: null,
+  }
 
   // Try to fetch agent info separately (optional)
-  let agentInfo: any = null
   if (prop.agent_id) {
     try {
       const { data: agent } = await supabase
         .from('profiles')
-        .select('id, full_name, phone, avatar_url, agency_name, bio, license_number')
+        .select('id, full_name, phone, avatar_url, agency_name, bio')
         .eq('id', prop.agent_id)
         .single()
-      agentInfo = agent
+      if (agent) prop.agent = agent as Profile
     } catch {}
   }
 
   // Try to fetch municipality separately (optional)
-  let municipalityInfo: any = null
   if (prop.municipality_id) {
     try {
       const { data: mun } = await supabase
@@ -70,13 +80,9 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         .select('id, name, slug, province:province_id (name, slug)')
         .eq('id', prop.municipality_id)
         .single()
-      municipalityInfo = mun
+      if (mun) prop.municipality = mun as any
     } catch {}
   }
-
-  // Attach fetched relations back to property
-  prop.agent = agentInfo
-  prop.municipality = municipalityInfo
 
   // Increment views (non-critical)
   try {
@@ -89,7 +95,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   const formatPrice = (price: number) => `${currencySymbol} ${price.toLocaleString('es-DO')}`
 
   // Get similar properties
-  let similarProperties: any[] = []
+  let similarProperties: Property[] = []
   try {
     const { data: similar } = await supabase
       .from('properties')
@@ -112,8 +118,8 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
   // Build features array for display
   const features = [
-    { icon: BedDouble, label: 'Habitaciones', value: prop.bedrooms, show: prop.bedrooms > 0 },
-    { icon: Bath, label: 'Baños', value: prop.bathrooms, show: prop.bathrooms > 0 },
+    { icon: BedDouble, label: 'Habitaciones', value: prop.bedrooms ?? 0, show: (prop.bedrooms ?? 0) > 0 },
+    { icon: Bath, label: 'Baños', value: prop.bathrooms ?? 0, show: (prop.bathrooms ?? 0) > 0 },
     { icon: Ruler, label: 'Área construida', value: `${prop.area_sqm} m²`, show: !!prop.area_sqm },
     { icon: Car, label: 'Estacionamiento', value: prop.parking_spaces, show: prop.parking_spaces > 0 },
   ]
@@ -237,14 +243,14 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                     </div>
                   )
                 })}
-                {prop.condo_fee > 0 && (
+                {(prop.condo_fee ?? 0) > 0 && (
                   <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3">
                     <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white border border-gray-200">
                       <Building2 className="h-4 w-4 text-gray-600" />
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">Cuota condominio</p>
-                      <p className="text-sm font-medium text-gray-900">{formatPrice(prop.condo_fee)}</p>
+                      <p className="text-sm font-medium text-gray-900">{formatPrice(prop.condo_fee ?? 0)}</p>
                     </div>
                   </div>
                 )}
@@ -301,8 +307,8 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
               {/* Quick stats */}
               <div className="flex items-center gap-3 mt-4 pt-4 border-t text-sm text-gray-600">
-                {prop.bedrooms > 0 && <span><BedDouble className="h-3.5 w-3.5 inline mr-1" />{prop.bedrooms} hab</span>}
-                {prop.bathrooms > 0 && <span><Bath className="h-3.5 w-3.5 inline mr-1" />{prop.bathrooms} baños</span>}
+                {(prop.bedrooms ?? 0) > 0 && <span><BedDouble className="h-3.5 w-3.5 inline mr-1" />{prop.bedrooms ?? 0} hab</span>}
+                {(prop.bathrooms ?? 0) > 0 && <span><Bath className="h-3.5 w-3.5 inline mr-1" />{prop.bathrooms ?? 0} baños</span>}
                 {prop.area_sqm && <span>{prop.area_sqm} m²</span>}
               </div>
 

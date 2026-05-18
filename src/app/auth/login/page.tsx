@@ -17,20 +17,33 @@ function LoginForm() {
   const searchParams = useSearchParams()
   const redirect = searchParams.get('redirect') || '/dashboard'
 
-  useEffect(() => {
-    const message = sessionStorage.getItem('auth-message')
-    if (message) {
-      setSuccessMessage(message)
-      sessionStorage.removeItem('auth-message')
-    }
-  }, [])
+  // Initialize state from sessionStorage (runs once on mount)
+  const [initialMessage] = useState(() => {
+    const msg = sessionStorage.getItem('auth-message')
+    if (msg) sessionStorage.removeItem('auth-message')
+    return msg
+  })
 
   useEffect(() => {
+    if (initialMessage) {
+      setSuccessMessage(initialMessage)
+    }
+  }, [initialMessage])
+
+  // Handle OAuth error from URL params (runs once on mount)
+  const [initialError] = useState(() => {
     const errorParam = searchParams.get('error')
     if (errorParam === 'auth_callback_error') {
-      setError('Error al iniciar sesión con Google. Intenta de nuevo o usa email y contraseña.')
+      return 'Error al iniciar sesión con Google. Intenta de nuevo o usa email y contraseña.'
     }
-  }, [searchParams])
+    return null
+  })
+
+  useEffect(() => {
+    if (initialError) {
+      setError(initialError)
+    }
+  }, [initialError])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()

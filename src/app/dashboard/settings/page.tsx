@@ -17,10 +17,6 @@ export default function DashboardSettingsPage() {
   const [profile, setProfile] = useState<any>(null)
   const [user, setUser] = useState<any>(null)
 
-  useEffect(() => {
-    loadProfile()
-  }, [])
-
   const loadProfile = async () => {
     try {
       const { data: { user: authUser } } = await supabase.auth.getUser()
@@ -40,6 +36,10 @@ export default function DashboardSettingsPage() {
       setIsLoading(false)
     }
   }
+
+  useEffect(() => {
+    loadProfile()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
