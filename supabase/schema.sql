@@ -81,11 +81,17 @@ create table if not exists properties (
   updated_at timestamp with time zone default now()
 );
 
--- Fix: add columns that might be missing from previous schema runs
+-- Fix: add ALL columns that might be missing from previous schema runs
 do $$ begin
+  alter table properties add column if not exists agent_id uuid references profiles(id) on delete cascade;
+  alter table properties add column if not exists title text;
   alter table properties add column if not exists description text;
+  alter table properties add column if not exists property_type text;
   alter table properties add column if not exists operation_type text;
+  alter table properties add column if not exists price numeric(12,2);
+  alter table properties add column if not exists currency text default 'USD';
   alter table properties add column if not exists price_per_sqm numeric(10,2);
+  alter table properties add column if not exists area_sqm numeric(8,2);
   alter table properties add column if not exists bedrooms int;
   alter table properties add column if not exists bathrooms int;
   alter table properties add column if not exists parking_spaces int default 0;
@@ -110,6 +116,9 @@ do $$ begin
   alter table properties add column if not exists updated_at timestamp with time zone default now();
 exception when others then null;
 end $$;
+
+-- Refresh Supabase schema cache so queries work immediately
+notify pgrst, 'reload schema';
 
 -- =============================================
 -- Leads / Inquisiciones
