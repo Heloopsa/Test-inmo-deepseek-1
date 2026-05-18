@@ -25,6 +25,13 @@ function LoginForm() {
     }
   }, [])
 
+  useEffect(() => {
+    const errorParam = searchParams.get('error')
+    if (errorParam === 'auth_callback_error') {
+      setError('Error al iniciar sesión con Google. Intenta de nuevo o usa email y contraseña.')
+    }
+  }, [searchParams])
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
