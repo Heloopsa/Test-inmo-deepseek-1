@@ -1,12 +1,12 @@
- 'use client'
+'use client'
 
-import { useState, useEffect } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Home, Mail, Lock, AlertCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
-export default function LoginPage() {
+function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -47,7 +47,7 @@ export default function LoginPage() {
         router.push(redirect)
         router.refresh()
       }
-    } catch (err: unknown) {
+    } catch {
       setError('Error inesperado. Por favor, intenta de nuevo.')
     } finally {
       setLoading(false)
@@ -70,7 +70,7 @@ export default function LoginPage() {
       if (error) {
         setError(getErrorMessage(error.message))
       }
-    } catch (err: unknown) {
+    } catch {
       setError('Error inesperado. Por favor, intenta de nuevo.')
     } finally {
       setLoading(false)
@@ -80,7 +80,6 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2">
             <Home className="h-8 w-8 text-emerald-600" />
@@ -90,19 +89,16 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        {/* Card */}
         <div className="rounded-2xl border bg-white p-8 shadow-lg">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Iniciar sesión</h1>
           <p className="text-gray-600 mb-6">Accede a tu cuenta de InmuebleRD</p>
 
-          {/* Success message */}
           {successMessage && (
             <div className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">
               {successMessage}
             </div>
           )}
 
-          {/* Error message */}
           {error && (
             <div className="mb-4 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
               <AlertCircle className="h-4 w-4 flex-shrink-0" />
@@ -110,7 +106,6 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Google login */}
           <button
             onClick={handleGoogleLogin}
             disabled={loading}
@@ -125,7 +120,6 @@ export default function LoginPage() {
             Continuar con Google
           </button>
 
-          {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-200" />
@@ -135,85 +129,53 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-gray-700">
-                Email
-              </label>
+              <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-gray-700">Email</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="tu@email.com"
-                  required
-                  className="w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 shadow-sm transition-all focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-                />
+                <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@email.com" required
+                  className="w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 shadow-sm transition-all focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20" />
               </div>
             </div>
-
             <div>
-              <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-gray-700">
-                Contraseña
-              </label>
+              <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-gray-700">Contraseña</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Tu contraseña"
-                  required
-                  minLength={6}
-                  className="w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 shadow-sm transition-all focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-                />
+                <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Tu contraseña" required minLength={6}
+                  className="w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 shadow-sm transition-all focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20" />
               </div>
             </div>
-
             <div className="flex items-center justify-end">
-              <Link
-                href="/auth/forgot-password"
-                className="text-sm font-medium text-emerald-600 hover:text-emerald-700"
-              >
-                ¿Olvidaste tu contraseña?
-              </Link>
+              <Link href="/auth/forgot-password" className="text-sm font-medium text-emerald-600 hover:text-emerald-700">¿Olvidaste tu contraseña?</Link>
             </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 disabled:opacity-50"
-            >
+            <button type="submit" disabled={loading}
+              className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 disabled:opacity-50">
               {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
             </button>
           </form>
 
-          {/* Register link */}
           <p className="mt-6 text-center text-sm text-gray-600">
             ¿No tienes una cuenta?{' '}
-            <Link href="/auth/register" className="font-semibold text-emerald-600 hover:text-emerald-700">
-              Regístrate gratis
-            </Link>
+            <Link href="/auth/register" className="font-semibold text-emerald-600 hover:text-emerald-700">Regístrate gratis</Link>
           </p>
         </div>
 
-        {/* Footer */}
         <p className="mt-6 text-center text-xs text-gray-500">
           Al continuar, aceptas nuestros{' '}
-          <Link href="/terms" className="text-emerald-600 hover:underline">
-            Términos de Servicio
-          </Link>{' '}
-          y{' '}
-          <Link href="/privacy" className="text-emerald-600 hover:underline">
-            Política de Privacidad
-          </Link>
+          <Link href="/terms" className="text-emerald-600 hover:underline">Términos de Servicio</Link> y{' '}
+          <Link href="/privacy" className="text-emerald-600 hover:underline">Política de Privacidad</Link>
         </p>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-gray-500">Cargando...</div>}>
+      <LoginForm />
+    </Suspense>
   )
 }
 
