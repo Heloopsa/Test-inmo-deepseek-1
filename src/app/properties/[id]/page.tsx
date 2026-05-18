@@ -126,14 +126,14 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             {/* Image Gallery */}
             <div className="rounded-xl border bg-white overflow-hidden shadow-sm">
               {prop.photos && prop.photos.length > 0 ? (
-                <div className="relative aspect-[16/9]">
+                <div className="relative aspect-video">
                   <Image src={prop.photos[0]} alt={prop.title} fill className="object-cover" />
                   <div className="absolute bottom-4 right-4 rounded-lg bg-black/70 px-3 py-1.5 text-sm text-white">
                     {prop.photos.length} fotos
                   </div>
                 </div>
               ) : (
-                <div className="flex aspect-[16/9] items-center justify-center bg-gray-100">
+                <div className="flex aspect-video items-center justify-center bg-gray-100">
                   <Home className="h-16 w-16 text-gray-400" />
                 </div>
               )}
@@ -141,12 +141,12 @@ export default async function PropertyDetailPage({ params }: PageProps) {
               {prop.photos && prop.photos.length > 1 && (
                 <div className="flex gap-2 p-4 overflow-x-auto">
                   {prop.photos.slice(0, 6).map((photo: string, index: number) => (
-                    <div key={index} className="relative h-20 w-28 flex-shrink-0 overflow-hidden rounded-lg">
+                    <div key={index} className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg">
                       <Image src={photo} alt={`${prop.title} - Foto ${index + 1}`} fill className="cursor-pointer object-cover hover:opacity-80" />
                     </div>
                   ))}
                   {prop.photos.length > 6 && (
-                    <div className="relative h-20 w-28 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100 flex items-center justify-center">
+                    <div className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-gray-100 flex items-center justify-center">
                       <span className="text-sm font-medium text-gray-600">+{prop.photos.length - 6}</span>
                     </div>
                   )}
