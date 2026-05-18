@@ -5,6 +5,7 @@ import PropertyCard from '@/components/PropertyCard'
 import PropertyGallery from '@/components/PropertyGallery'
 import PropertyMap from '@/components/PropertyMap'
 import PropertyContact from '@/components/PropertyContact'
+import PropertyActions from '@/components/PropertyActions'
 import { createClient } from '@/lib/supabase/server'
 import {
   BedDouble, Bath, Ruler, MapPin, Car, ArrowLeft, Heart, Share2,
@@ -173,21 +174,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                     </div>
                   )}
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <button onClick={() => {
-                    if (navigator.share) navigator.share({ title: prop.title, url: window.location.href })
-                    else navigator.clipboard.writeText(window.location.href)
-                  }}
-                    className="rounded-lg border border-gray-200 p-2 text-gray-500 transition-all hover:bg-gray-50 hover:text-emerald-600"
-                    title="Compartir">
-                    <Share2 className="h-5 w-5" />
-                  </button>
-                  <button
-                    className="rounded-lg border border-gray-200 p-2 text-gray-500 transition-all hover:bg-gray-50 hover:text-red-500"
-                    title="Guardar">
-                    <Heart className="h-5 w-5" />
-                  </button>
-                </div>
+                <PropertyActions title={prop.title} />
               </div>
 
               <div className="flex items-baseline gap-2 mt-4 pt-4 border-t">
