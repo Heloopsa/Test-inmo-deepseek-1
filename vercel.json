@@ -1,6 +1,6 @@
 {
-  "buildCommand": "next build",
+  "buildCommand": "npx next build",
   "outputDirectory": ".next",
   "framework": "nextjs",
-  "ignoreCommand": "npx --yes turbo-ignore"
+  "rootDirectory": "inmueble-rd"
 }
