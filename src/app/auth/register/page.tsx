@@ -56,8 +56,7 @@ export default function RegisterPage() {
 
       // Si es agente, actualizar el perfil con el nombre de la agencia
       if (role === 'agent' && authData.user) {
-        const profileSupabase = supabase as any
-        const { error: profileError } = await profileSupabase
+        const { error: profileError } = await supabase
           .from('profiles')
           .update({
             agency_name: agencyName || null,

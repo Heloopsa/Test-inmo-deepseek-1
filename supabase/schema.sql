@@ -9,7 +9,7 @@ create extension if not exists "uuid-ossp";
 -- =============================================
 -- Profiles (vendedores, agentes, compradores)
 -- =============================================
-create table profiles (
+create table if not exists profiles (
   id uuid references auth.users on delete cascade primary key,
   full_name text not null,
   phone text,
@@ -26,7 +26,7 @@ create table profiles (
 -- =============================================
 -- Provincias (República Dominicana)
 -- =============================================
-create table provinces (
+create table if not exists provinces (
   id serial primary key,
   name text not null unique,
   slug text not null unique
@@ -35,7 +35,7 @@ create table provinces (
 -- =============================================
 -- Municipios (por provincia)
 -- =============================================
-create table municipalities (
+create table if not exists municipalities (
   id serial primary key,
   province_id int references provinces(id) on delete cascade,
   name text not null,
@@ -45,7 +45,7 @@ create table municipalities (
 -- =============================================
 -- Propiedades
 -- =============================================
-create table properties (
+create table if not exists properties (
   id uuid default gen_random_uuid() primary key,
   agent_id uuid references profiles(id) on delete cascade,
   title text not null,
@@ -84,7 +84,7 @@ create table properties (
 -- =============================================
 -- Leads / Inquisiciones
 -- =============================================
-create table leads (
+create table if not exists leads (
   id uuid default gen_random_uuid() primary key,
   property_id uuid references properties(id) on delete cascade,
   buyer_name text not null,
@@ -101,7 +101,7 @@ create table leads (
 -- =============================================
 -- Favoritos / Watchlist
 -- =============================================
-create table favorites (
+create table if not exists favorites (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references profiles(id) on delete cascade,
   property_id uuid references properties(id) on delete cascade,
@@ -112,7 +112,7 @@ create table favorites (
 -- =============================================
 -- Reviews para agentes
 -- =============================================
-create table reviews (
+create table if not exists reviews (
   id uuid default gen_random_uuid() primary key,
   agent_id uuid references profiles(id) on delete cascade,
   reviewer_name text not null,
@@ -128,54 +128,68 @@ create table reviews (
 -- Profiles RLS
 alter table profiles enable row level security;
 
-create policy "Users can view own profile" on profiles
-  for select using (auth.uid() = id);
-
-create policy "Users can update own profile" on profiles
-  for update using (auth.uid() = id);
-
-create policy "Public profiles visible to all" on profiles
-  for select using (true);
+do $$ begin
+  if not exists (select 1 from pg_policies where policyname = 'Users can view own profile' and tablename = 'profiles') then
+    create policy "Users can view own profile" on profiles for select using (auth.uid() = id);
+  end if;
+  if not exists (select 1 from pg_policies where policyname = 'Users can update own profile' and tablename = 'profiles') then
+    create policy "Users can update own profile" on profiles for update using (auth.uid() = id);
+  end if;
+  if not exists (select 1 from pg_policies where policyname = 'Public profiles visible to all' and tablename = 'profiles') then
+    create policy "Public profiles visible to all" on profiles for select using (true);
+  end if;
+end $$;
 
 -- Properties RLS
 alter table properties enable row level security;
 
-create policy "Anyone can view active properties" on properties
-  for select using (status = 'active');
-
-create policy "Agents manage own properties" on properties
-  for all using (auth.uid() = agent_id);
+do $$ begin
+  if not exists (select 1 from pg_policies where policyname = 'Anyone can view active properties' and tablename = 'properties') then
+    create policy "Anyone can view active properties" on properties for select using (status = 'active');
+  end if;
+  if not exists (select 1 from pg_policies where policyname = 'Agents manage own properties' and tablename = 'properties') then
+    create policy "Agents manage own properties" on properties for all using (auth.uid() = agent_id);
+  end if;
+end $$;
 
 -- Leads RLS
 alter table leads enable row level security;
 
-create policy "Agents see leads for their properties" on leads
-  for select using (
-    exists (select 1 from properties
-            where properties.id = leads.property_id
-            and properties.agent_id = auth.uid())
-  );
-
-create policy "Anyone can create leads" on leads
-  for insert with check (true);
+do $$ begin
+  if not exists (select 1 from pg_policies where policyname = 'Agents see leads for their properties' and tablename = 'leads') then
+    create policy "Agents see leads for their properties" on leads
+      for select using (
+        exists (select 1 from properties where properties.id = leads.property_id and properties.agent_id = auth.uid())
+      );
+  end if;
+  if not exists (select 1 from pg_policies where policyname = 'Anyone can create leads' and tablename = 'leads') then
+    create policy "Anyone can create leads" on leads for insert with check (true);
+  end if;
+end $$;
 
 -- Favorites RLS
 alter table favorites enable row level security;
 
-create policy "Users see own favorites" on favorites
-  for select using (auth.uid() = user_id);
-
-create policy "Users manage own favorites" on favorites
-  for all using (auth.uid() = user_id);
+do $$ begin
+  if not exists (select 1 from pg_policies where policyname = 'Users see own favorites' and tablename = 'favorites') then
+    create policy "Users see own favorites" on favorites for select using (auth.uid() = user_id);
+  end if;
+  if not exists (select 1 from pg_policies where policyname = 'Users manage own favorites' and tablename = 'favorites') then
+    create policy "Users manage own favorites" on favorites for all using (auth.uid() = user_id);
+  end if;
+end $$;
 
 -- Reviews RLS
 alter table reviews enable row level security;
 
-create policy "Anyone can view reviews" on reviews
-  for select using (true);
-
-create policy "Authenticated users can create reviews" on reviews
-  for insert with check (auth.uid() is not null);
+do $$ begin
+  if not exists (select 1 from pg_policies where policyname = 'Anyone can view reviews' and tablename = 'reviews') then
+    create policy "Anyone can view reviews" on reviews for select using (true);
+  end if;
+  if not exists (select 1 from pg_policies where policyname = 'Authenticated users can create reviews' and tablename = 'reviews') then
+    create policy "Authenticated users can create reviews" on reviews for insert with check (auth.uid() is not null);
+  end if;
+end $$;
 
 -- =============================================
 -- Triggers
@@ -191,6 +205,7 @@ begin
 end;
 $$ language plpgsql security definer;
 
+drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure handle_new_user();
@@ -204,6 +219,7 @@ begin
 end;
 $$ language plpgsql;
 
+drop trigger if exists update_properties_updated_at on properties;
 create trigger update_properties_updated_at
   before update on properties
   for each row
@@ -219,18 +235,42 @@ end;
 $$ language plpgsql;
 
 -- =============================================
+-- STORAGE - Bucket para imágenes de propiedades
+-- =============================================
+
+-- Crear bucket (si no existe)
+insert into storage.buckets (id, name, public)
+values ('property-images', 'property-images', true)
+on conflict (id) do nothing;
+
+do $$ begin
+  if not exists (select 1 from pg_policies where policyname = 'Public Read' and tablename = 'objects' and schemaname = 'storage') then
+    create policy "Public Read" on storage.objects for select using (bucket_id = 'property-images');
+  end if;
+  if not exists (select 1 from pg_policies where policyname = 'Authenticated Upload' and tablename = 'objects' and schemaname = 'storage') then
+    create policy "Authenticated Upload" on storage.objects for insert with check (bucket_id = 'property-images' and auth.role() = 'authenticated');
+  end if;
+  if not exists (select 1 from pg_policies where policyname = 'Owner Update' and tablename = 'objects' and schemaname = 'storage') then
+    create policy "Owner Update" on storage.objects for update using (bucket_id = 'property-images' and auth.uid() = owner);
+  end if;
+  if not exists (select 1 from pg_policies where policyname = 'Owner Delete' and tablename = 'objects' and schemaname = 'storage') then
+    create policy "Owner Delete" on storage.objects for delete using (bucket_id = 'property-images' and auth.uid() = owner);
+  end if;
+end $$;
+
+-- =============================================
 -- INDEXES (performance)
 -- =============================================
-create index idx_properties_agent_id on properties(agent_id);
-create index idx_properties_status on properties(status);
-create index idx_properties_type on properties(property_type);
-create index idx_properties_operation on properties(operation_type);
-create index idx_properties_price on properties(price);
-create index idx_properties_featured on properties(is_featured);
-create index idx_properties_municipality on properties(municipality_id);
-create index idx_leads_property on leads(property_id);
-create index idx_favorites_user on favorites(user_id);
-create index idx_reviews_agent on reviews(agent_id);
+create index if not exists idx_properties_agent_id on properties(agent_id);
+create index if not exists idx_properties_status on properties(status);
+create index if not exists idx_properties_type on properties(property_type);
+create index if not exists idx_properties_operation on properties(operation_type);
+create index if not exists idx_properties_price on properties(price);
+create index if not exists idx_properties_featured on properties(is_featured);
+create index if not exists idx_properties_municipality on properties(municipality_id);
+create index if not exists idx_leads_property on leads(property_id);
+create index if not exists idx_favorites_user on favorites(user_id);
+create index if not exists idx_reviews_agent on reviews(agent_id);
 
 -- =============================================
 -- SEED DATA - Provincias de RD
@@ -284,7 +324,8 @@ insert into provinces (name, slug) values
   ('El Norte - Valverde', 'el-norte-valverde'),
   ('El Sur - Bahoruco', 'el-sur-bahoruco'),
   ('El Sur - Barahona', 'el-sur-barahona'),
-  ('El Sur - Independencia', 'el-sur-independencia');
+  ('El Sur - Independencia', 'el-sur-independencia')
+on conflict (name) do nothing;
 
 -- =============================================
 -- SEED DATA - Municipios principales
@@ -294,55 +335,65 @@ insert into provinces (name, slug) values
 insert into municipalities (province_id, name, slug) values
 (1, 'Santo Domingo Oeste', 'santo-domingo-oeste'),
 (1, 'Santo Domingo Centro', 'santo-domingo-centro'),
-(1, 'Santo Domingo Este', 'santo-domingo-este');
+(1, 'Santo Domingo Este', 'santo-domingo-este')
+on conflict do nothing;
 
 -- Santo Domingo Norte
 insert into municipalities (province_id, name, slug) values
 (2, 'Los Alcarrizos', 'los-alcarrizos'),
 (2, 'San Antonio de Guerra', 'san-antonio-de-guerra'),
-(2, 'Santo Domingo Norte', 'santo-domingo-norte');
+(2, 'Santo Domingo Norte', 'santo-domingo-norte')
+on conflict do nothing;
 
 -- Santo Domingo Sur
 insert into municipalities (province_id, name, slug) values
 (3, 'Boca Chica', 'boca-chica'),
 (3, 'Los Cacaos', 'los-cacaos'),
-(3, 'Pueblo Nuevo', 'pueblo-nuevo');
+(3, 'Pueblo Nuevo', 'pueblo-nuevo')
+on conflict do nothing;
 
 -- Santiago
 insert into municipalities (province_id, name, slug) values
 (4, 'Santiago Centro', 'santiago-centro'),
 (4, 'Cibao Norte - Santiago', 'cibao-norte-santiago'),
-(4, 'Tamboril', 'tamboril');
+(4, 'Tamboril', 'tamboril')
+on conflict do nothing;
 
 -- La Altagracia (Punta Cana)
 insert into municipalities (province_id, name, slug) values
 (5, 'Bávaro', 'bavaro'),
 (5, 'Uvero', 'uvero'),
-(5, 'Higüey', 'higuey');
+(5, 'Higüey', 'higuey')
+on conflict do nothing;
 
 -- Puerto Plata
 insert into municipalities (province_id, name, slug) values
 (6, 'Puerto Plata', 'puerto-plata'),
 (6, 'Imbert', 'imbert'),
-(6, 'Luperón', 'luperon');
+(6, 'Luperón', 'luperon')
+on conflict do nothing;
 
 -- San Cristóbal
 insert into municipalities (province_id, name, slug) values
 (7, 'San Cristóbal', 'san-cristobal'),
 (7, 'San José de Ocoa', 'san-jose-de-oca'),
-(7, 'Elias Piña', 'elias-pina');
+(7, 'Elias Piña', 'elias-pina')
+on conflict do nothing;
 
 -- Higüey
 insert into municipalities (province_id, name, slug) values
 (8, 'Higüey', 'higuey'),
-(8, 'Pantoja', 'pantoja');
+(8, 'Pantoja', 'pantoja')
+on conflict do nothing;
 
 -- La Romana
 insert into municipalities (province_id, name, slug) values
 (9, 'La Romana', 'la-romana'),
-(9, 'Bayahíbe', 'bayahibe');
+(9, 'Bayahíbe', 'bayahibe')
+on conflict do nothing;
 
 -- Samaná
 insert into municipalities (province_id, name, slug) values
 (10, 'Samaná', 'samana'),
-(10, 'El Portillo', 'el-portillo');
+(10, 'El Portillo', 'el-portillo')
+on conflict do nothing;

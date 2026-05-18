@@ -101,6 +101,7 @@ export default function NewPropertyPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const form = e.currentTarget
     setIsSubmitting(true)
     setError('')
 
@@ -108,7 +109,6 @@ export default function NewPropertyPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Debes iniciar sesión')
 
-      const form = e.currentTarget
       const formData = new FormData(form)
 
       const propertyData = {
