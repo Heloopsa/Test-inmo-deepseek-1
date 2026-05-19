@@ -17,6 +17,28 @@ export default function DashboardSettingsPage() {
   const [profile, setProfile] = useState<any>(null)
   const [user, setUser] = useState<any>(null)
   const [missingColumns, setMissingColumns] = useState<string[]>([])
+  const [isMigrating, setIsMigrating] = useState(false)
+
+  const runMigration = async () => {
+    setIsMigrating(true)
+    setError('')
+    setSuccess('')
+    try {
+      const res = await fetch('/api/migrate', { method: 'POST' })
+      const data = await res.json()
+      if (data.success) {
+        setSuccess('Base de datos reparada. Recarga la página e intenta guardar de nuevo.')
+        setMissingColumns([])
+        setTimeout(() => window.location.reload(), 2000)
+      } else {
+        setError(data.instructions || data.error || 'Error al reparar. Ve a Supabase SQL Editor manualmente.')
+      }
+    } catch {
+      setError('Error de conexión. Ve a Supabase SQL Editor manualmente.')
+    } finally {
+      setIsMigrating(false)
+    }
+  }
 
   const loadProfile = async () => {
     try {
@@ -130,24 +152,30 @@ export default function DashboardSettingsPage() {
                 <h3 className="font-semibold text-amber-800">Columnas faltantes en la base de datos</h3>
                 <p className="text-sm text-amber-700 mt-1">
                   Los campos <strong>{missingColumns.join(', ')}</strong> no se guardarán hasta que agregues las columnas faltantes en Supabase.
-                  Abre Supabase Dashboard, ve a <strong>SQL Editor</strong> y ejecuta:
                 </p>
-                <pre className="mt-3 bg-amber-100 rounded-lg p-3 text-xs text-amber-900 overflow-x-auto">
-{`ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS phone text;
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS agency_name text;
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS license_number text;
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS bio text;
-NOTIFY pgrst, 'reload schema';`}
-                </pre>
-                <a
-                  href="https://app.supabase.com/project/ichymotczbfvlyeyjgvc/sql/new"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 mt-3 text-sm font-medium text-amber-800 hover:text-amber-900 underline"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  Abrir SQL Editor de Supabase
-                </a>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  <button
+                    type="button"
+                    onClick={runMigration}
+                    disabled={isMigrating}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-amber-700 disabled:opacity-50"
+                  >
+                    {isMigrating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />}
+                    {isMigrating ? 'Reparando...' : 'Reparar base de datos'}
+                  </button>
+                  <a
+                    href="https://app.supabase.com/project/ichymotczbfvlyeyjgvc/sql/new"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-medium text-amber-800 shadow-sm hover:bg-amber-50"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    Abrir SQL Editor
+                  </a>
+                </div>
+                <p className="text-xs text-amber-600 mt-3">
+                  Si el botón no funciona, abre SQL Editor y pega el contenido de <strong>supabase/schema.sql</strong>
+                </p>
               </div>
             </div>
           </div>
