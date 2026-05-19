@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { ArrowLeft, Loader2, Save, User, Building2, Phone, Shield, Mail } from 'lucide-react'
+import { ArrowLeft, Loader2, Save, User, Mail } from 'lucide-react'
 
 export default function DashboardSettingsPage() {
   const router = useRouter()
@@ -51,12 +51,9 @@ export default function DashboardSettingsPage() {
       const form = e.currentTarget
       const formData = new FormData(form)
 
-      const profileData = {
-        full_name: formData.get('full_name') as string,
-        phone: formData.get('phone') as string,
-        agency_name: formData.get('agency_name') as string,
-        license_number: formData.get('license_number') as string,
-      }
+      const profileData: Record<string, string> = {}
+      const fullName = formData.get('full_name') as string
+      if (fullName) profileData.full_name = fullName
 
       const { error: updateError } = await supabase
         .from('profiles')
@@ -117,84 +114,18 @@ export default function DashboardSettingsPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  <User className="h-3.5 w-3.5 inline mr-1" />
-                  Nombre completo *
-                </label>
-                <input
-                  type="text" name="full_name" required
-                  defaultValue={profile?.full_name || ''}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-                  placeholder="Tu nombre completo"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  <Phone className="h-3.5 w-3.5 inline mr-1" />
-                  Teléfono
-                </label>
-                <input
-                  type="tel" name="phone"
-                  defaultValue={profile?.phone || ''}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-                  placeholder="+1 (809) 555-0000"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Agent Info */}
-          <div className="rounded-xl border bg-white p-6 shadow-sm space-y-5">
-            <div className="flex items-center gap-3 pb-4 border-b">
-              <div className="rounded-lg bg-blue-100 p-2.5">
-                <Building2 className="h-5 w-5 text-blue-600" />
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900">Información profesional</h2>
-                <p className="text-sm text-gray-500">Datos de tu agencia o perfil profesional</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  <Building2 className="h-3.5 w-3.5 inline mr-1" />
-                  Nombre de agencia
-                </label>
-                <input
-                  type="text" name="agency_name"
-                  defaultValue={profile?.agency_name || ''}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-                  placeholder="Ej: Inmobiliaria Piantini"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  <Shield className="h-3.5 w-3.5 inline mr-1" />
-                  Licencia / Matrícula
-                </label>
-                <input
-                  type="text" name="license_number"
-                  defaultValue={profile?.license_number || ''}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-                  placeholder="Número de licencia"
-                />
-              </div>
-            </div>
-
-            {/* <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Biografía</label>
-              <textarea
-                name="bio" rows={4}
-                defaultValue={profile?.bio || ''}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                <User className="h-3.5 w-3.5 inline mr-1" />
+                Nombre completo *
+              </label>
+              <input
+                type="text" name="full_name" required
+                defaultValue={profile?.full_name || ''}
                 className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-                placeholder="Cuéntales a tus clientes sobre ti y tu experiencia..."
+                placeholder="Tu nombre completo"
               />
-            </div> */}
+            </div>
           </div>
 
           {/* Danger Zone */}
