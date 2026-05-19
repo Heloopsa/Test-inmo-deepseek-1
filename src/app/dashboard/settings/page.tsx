@@ -185,7 +185,7 @@ NOTIFY pgrst, 'reload schema';`}
                 <input
                   type="text" name="full_name" required
                   defaultValue={profile?.full_name || ''}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                   placeholder="Tu nombre completo"
                 />
               </div>
@@ -198,7 +198,7 @@ NOTIFY pgrst, 'reload schema';`}
                 <input
                   type="tel" name="phone"
                   defaultValue={profile?.phone || ''}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                   placeholder="+1 (809) 555-0000"
                 />
               </div>
@@ -226,7 +226,7 @@ NOTIFY pgrst, 'reload schema';`}
                 <input
                   type="text" name="agency_name"
                   defaultValue={profile?.agency_name || ''}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                   placeholder="Ej: Inmobiliaria Piantini"
                 />
               </div>
@@ -239,7 +239,7 @@ NOTIFY pgrst, 'reload schema';`}
                 <input
                   type="text" name="license_number"
                   defaultValue={profile?.license_number || ''}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                   placeholder="Número de licencia"
                 />
               </div>
@@ -250,7 +250,7 @@ NOTIFY pgrst, 'reload schema';`}
               <textarea
                 name="bio" rows={3}
                 defaultValue={profile?.bio || ''}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                 placeholder="Cuéntales a tus clientes sobre ti y tu experiencia..."
               />
             </div>
