@@ -57,7 +57,7 @@ export default function DashboardSettingsPage() {
       if (fullName) profileData.full_name = fullName
 
       // Try to update each optional field individually, catching column errors
-      const optionalFields = ['phone']
+      const optionalFields = ['phone', 'agency_name', 'license_number', 'bio']
       for (const field of optionalFields) {
         const value = formData.get(field) as string
         if (value) {
@@ -172,8 +172,46 @@ export default function DashboardSettingsPage() {
               </div>
               <div>
                 <h2 className="text-lg font-semibold text-gray-900">Información profesional</h2>
-                <p className="text-sm text-gray-500">Estos campos estarán disponibles pronto</p>
+                <p className="text-sm text-gray-500">Datos de tu agencia o perfil profesional</p>
               </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <Building2 className="h-3.5 w-3.5 inline mr-1" />
+                  Nombre de agencia
+                </label>
+                <input
+                  type="text" name="agency_name"
+                  defaultValue={profile?.agency_name || ''}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  placeholder="Ej: Inmobiliaria Piantini"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <Shield className="h-3.5 w-3.5 inline mr-1" />
+                  Licencia / Matrícula
+                </label>
+                <input
+                  type="text" name="license_number"
+                  defaultValue={profile?.license_number || ''}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  placeholder="Número de licencia"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Biografía</label>
+              <textarea
+                name="bio" rows={3}
+                defaultValue={profile?.bio || ''}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                placeholder="Cuéntales a tus clientes sobre ti y tu experiencia..."
+              />
             </div>
           </div>
 
