@@ -14,6 +14,11 @@ ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS subscription_plan text CHEC
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS subscription_expires_at timestamp with time zone;
 
 -- FIX PROPERTIES TABLE
+-- Remove incorrect CHECK constraints and recreate with all allowed values
+ALTER TABLE public.properties DROP CONSTRAINT IF EXISTS properties_property_type_check;
+ALTER TABLE public.properties DROP CONSTRAINT IF EXISTS properties_operation_type_check;
+ALTER TABLE public.properties DROP CONSTRAINT IF EXISTS properties_currency_check;
+
 ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS area_sqm numeric(8,2);
 ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS bedrooms int;
 ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS bathrooms int;
@@ -37,6 +42,16 @@ ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS neighborhood text;
 ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS building_name text;
 ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS photos text[];
 ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS is_featured boolean default false;
+
+-- Recreate constraints with all allowed values
+ALTER TABLE public.properties ADD CONSTRAINT properties_property_type_check
+  CHECK (property_type IN ('apartment', 'house', 'condo', 'land', 'commercial', 'office', 'local'));
+
+ALTER TABLE public.properties ADD CONSTRAINT properties_operation_type_check
+  CHECK (operation_type IN ('sale', 'rent', 'rental_with_option'));
+
+ALTER TABLE public.properties ADD CONSTRAINT properties_currency_check
+  CHECK (currency IN ('USD', 'DOP'));
 
 -- Refresh PostgREST schema cache
 NOTIFY pgrst, 'reload schema';
