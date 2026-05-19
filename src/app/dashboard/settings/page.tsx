@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { ArrowLeft, Loader2, Save, User, Mail } from 'lucide-react'
+import { ArrowLeft, Loader2, Save, User, Mail, Phone, Building2, Shield } from 'lucide-react'
 
 export default function DashboardSettingsPage() {
   const router = useRouter()
@@ -51,10 +51,31 @@ export default function DashboardSettingsPage() {
       const form = e.currentTarget
       const formData = new FormData(form)
 
+      // Build profile data with only the fields we need to update
       const profileData: Record<string, string> = {}
       const fullName = formData.get('full_name') as string
       if (fullName) profileData.full_name = fullName
 
+      // Try to update each optional field individually, catching column errors
+      const optionalFields = ['phone']
+      for (const field of optionalFields) {
+        const value = formData.get(field) as string
+        if (value) {
+          try {
+            const { error: updateError } = await supabase
+              .from('profiles')
+              .update({ [field]: value })
+              .eq('id', user.id)
+            if (updateError) {
+              console.warn(`Column "${field}" not available:`, updateError.message)
+            }
+          } catch {
+            console.warn(`Column "${field}" not available`)
+          }
+        }
+      }
+
+      // Update full_name (this column always exists)
       const { error: updateError } = await supabase
         .from('profiles')
         .update(profileData)
@@ -114,17 +135,45 @@ export default function DashboardSettingsPage() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                <User className="h-3.5 w-3.5 inline mr-1" />
-                Nombre completo *
-              </label>
-              <input
-                type="text" name="full_name" required
-                defaultValue={profile?.full_name || ''}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-                placeholder="Tu nombre completo"
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <User className="h-3.5 w-3.5 inline mr-1" />
+                  Nombre completo *
+                </label>
+                <input
+                  type="text" name="full_name" required
+                  defaultValue={profile?.full_name || ''}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  placeholder="Tu nombre completo"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <Phone className="h-3.5 w-3.5 inline mr-1" />
+                  Teléfono
+                </label>
+                <input
+                  type="tel" name="phone"
+                  defaultValue={profile?.phone || ''}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  placeholder="+1 (809) 555-0000"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Agent Info */}
+          <div className="rounded-xl border bg-white p-6 shadow-sm space-y-5">
+            <div className="flex items-center gap-3 pb-4 border-b">
+              <div className="rounded-lg bg-blue-100 p-2.5">
+                <Building2 className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">Información profesional</h2>
+                <p className="text-sm text-gray-500">Estos campos estarán disponibles pronto</p>
+              </div>
             </div>
           </div>
 
