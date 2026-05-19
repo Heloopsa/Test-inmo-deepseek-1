@@ -56,7 +56,6 @@ export default function DashboardSettingsPage() {
         phone: formData.get('phone') as string,
         agency_name: formData.get('agency_name') as string,
         license_number: formData.get('license_number') as string,
-        bio: formData.get('bio') as string,
       }
 
       const { error: updateError } = await supabase
@@ -187,7 +186,7 @@ export default function DashboardSettingsPage() {
               </div>
             </div>
 
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Biografía</label>
               <textarea
                 name="bio" rows={4}
@@ -195,7 +194,7 @@ export default function DashboardSettingsPage() {
                 className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                 placeholder="Cuéntales a tus clientes sobre ti y tu experiencia..."
               />
-            </div>
+            </div> */}
           </div>
 
           {/* Danger Zone */}

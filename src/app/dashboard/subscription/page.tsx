@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { CheckCircle2, ArrowLeft, TrendingUp, Home, Building2, Star, Crown } from 'lucide-react'
+import { CheckCircle2, ArrowLeft, Home, Building2, Star, Crown } from 'lucide-react'
 
 const plans = [
   {
