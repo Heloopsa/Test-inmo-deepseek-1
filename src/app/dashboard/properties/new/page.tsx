@@ -204,14 +204,14 @@ export default function NewPropertyPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Título de la propiedad *</label>
               <input type="text" name="title" required
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                 placeholder="Ej: Apartamento en el Ensanche Piantini" />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
               <textarea name="description" rows={4}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                 placeholder="Describe la propiedad, sus características y detalles importantes..." />
             </div>
 
@@ -219,7 +219,7 @@ export default function NewPropertyPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de propiedad *</label>
                 <select name="property_type" required
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20">
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20">
                   <option value="">Seleccionar...</option>
                   {propertyTypes.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </select>
@@ -228,7 +228,7 @@ export default function NewPropertyPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Operación *</label>
                 <select name="operation_type" required
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20">
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20">
                   <option value="">Seleccionar...</option>
                   {operationTypes.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </select>
@@ -239,14 +239,14 @@ export default function NewPropertyPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Precio *</label>
                 <input type="number" name="price" required min={0} step="0.01"
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                   placeholder="2,500,000" />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Moneda</label>
                 <select name="currency"
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20">
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20">
                   {currencies.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                 </select>
               </div>
@@ -254,7 +254,7 @@ export default function NewPropertyPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Área (m²) *</label>
                 <input type="number" name="area_sqm" required min={1} step="0.01"
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                   placeholder="120" />
               </div>
             </div>
@@ -268,19 +268,19 @@ export default function NewPropertyPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Habitaciones</label>
                 <input type="number" name="bedrooms" min={0}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                   placeholder="3" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Baños</label>
                 <input type="number" name="bathrooms" min={0} step="0.5"
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                   placeholder="2" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Estacionamientos</label>
                 <input type="number" name="parking_spaces" min={0}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                   placeholder="2" />
               </div>
             </div>
@@ -310,13 +310,13 @@ export default function NewPropertyPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Sector / Barrio</label>
                 <input type="text" name="neighborhood"
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                   placeholder="Ensanche Piantini" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
                 <input type="text" name="address"
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                   placeholder="Calle Principal #123" />
               </div>
             </div>

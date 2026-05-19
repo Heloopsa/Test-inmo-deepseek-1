@@ -116,7 +116,7 @@ async function PropertiesContent({ searchParams }: { searchParams: Promise<Recor
                   type="text"
                   placeholder="Buscar por zona, ciudad o título..."
                   defaultValue={params.q as string | undefined}
-                  className="w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-10 pr-4 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  className="w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                 />
               </div>
               <button
@@ -129,14 +129,14 @@ async function PropertiesContent({ searchParams }: { searchParams: Promise<Recor
 
             {/* Filter row */}
             <div className="flex flex-wrap gap-2">
-              <select name="type" defaultValue={params.type as string | undefined} className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none">
+              <select name="type" defaultValue={params.type as string | undefined} className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none">
                 <option value="">Todos los tipos</option>
                 {Object.entries(propertyTypeLabels).map(([value, label]) => (
                   <option key={value} value={value}>{label}</option>
                 ))}
               </select>
 
-              <select name="operation" defaultValue={params.operation as string | undefined} className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none">
+              <select name="operation" defaultValue={params.operation as string | undefined} className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none">
                 <option value="">Todas las operaciones</option>
                 {Object.entries(operationTypeLabels).map(([value, label]) => (
                   <option key={value} value={value}>{label}</option>
@@ -148,7 +148,7 @@ async function PropertiesContent({ searchParams }: { searchParams: Promise<Recor
                 type="number"
                 placeholder="Precio mín."
                 defaultValue={params.minPrice as string | undefined}
-                className="w-32 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none"
+                className="w-32 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none"
               />
 
               <input
@@ -156,10 +156,10 @@ async function PropertiesContent({ searchParams }: { searchParams: Promise<Recor
                 type="number"
                 placeholder="Precio máx."
                 defaultValue={params.maxPrice as string | undefined}
-                className="w-32 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none"
+                className="w-32 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none"
               />
 
-              <select name="bedrooms" defaultValue={params.bedrooms as string | undefined} className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none">
+              <select name="bedrooms" defaultValue={params.bedrooms as string | undefined} className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none">
                 <option value="">Habitaciones</option>
                 <option value="1">1+</option>
                 <option value="2">2+</option>
