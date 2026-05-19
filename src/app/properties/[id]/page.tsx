@@ -65,7 +65,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
     try {
       const { data: agent } = await supabase
         .from('profiles')
-        .select('id, full_name, phone, avatar_url, agency_name, bio')
+        .select('id, full_name, avatar_url, role')
         .eq('id', prop.agent_id)
         .single()
       if (agent) prop.agent = agent as Profile

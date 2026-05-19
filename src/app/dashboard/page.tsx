@@ -43,14 +43,7 @@ export default async function DashboardPage() {
     admin: 'Administrador',
   }
 
-  const planLabelMap: Record<string, string> = {
-    free: 'Plan Gratis',
-    basic: 'Plan Básico',
-    premium: 'Plan Premium',
-  }
-
   const roleLabel = roleLabelMap[profileAny?.role || 'buyer'] || 'Usuario'
-  const planLabel = planLabelMap[profileAny?.subscription_plan || 'free'] || 'Plan Gratis'
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -68,9 +61,9 @@ export default async function DashboardPage() {
               <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">
                 {roleLabel}
               </span>
-              <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700">
-                {planLabel}
-              </span>
+              {/* <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700">
+                Plan Gratis
+              </span> */}
             </div>
           </div>
         </div>

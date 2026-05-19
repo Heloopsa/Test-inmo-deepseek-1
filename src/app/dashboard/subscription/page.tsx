@@ -64,13 +64,7 @@ export default async function SubscriptionPage() {
 
   if (!user) redirect('/auth/login')
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('subscription_plan')
-    .eq('id', user.id)
-    .single()
-
-  const currentPlan = (profile as any)?.subscription_plan || 'free'
+  const currentPlan: string = 'free'
 
   return (
     <div className="min-h-screen bg-gray-50">

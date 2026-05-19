@@ -54,14 +54,11 @@ export default function RegisterPage() {
         return
       }
 
-      // Si es agente, actualizar el perfil con el nombre de la agencia
+      // Si es agente, actualizar el rol del perfil
       if (role === 'agent' && authData.user) {
         const { error: profileError } = await supabase
           .from('profiles')
-          .update({
-            agency_name: agencyName || null,
-            role: 'agent',
-          })
+          .update({ role: 'agent' })
           .eq('id', authData.user.id)
 
         if (profileError) {
