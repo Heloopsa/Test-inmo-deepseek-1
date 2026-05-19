@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { ArrowLeft, Loader2, Save, User, Mail, Phone, Building2, Shield } from 'lucide-react'
+import { ArrowLeft, Loader2, Save, User, Mail, Phone, Building2, Shield, Database, ExternalLink } from 'lucide-react'
 
 export default function DashboardSettingsPage() {
   const router = useRouter()
@@ -16,6 +16,7 @@ export default function DashboardSettingsPage() {
   const [success, setSuccess] = useState('')
   const [profile, setProfile] = useState<any>(null)
   const [user, setUser] = useState<any>(null)
+  const [missingColumns, setMissingColumns] = useState<string[]>([])
 
   const loadProfile = async () => {
     try {
@@ -46,43 +47,51 @@ export default function DashboardSettingsPage() {
     setIsSubmitting(true)
     setError('')
     setSuccess('')
+    setMissingColumns([])
 
     try {
       const form = e.currentTarget
       const formData = new FormData(form)
+      const missing: string[] = []
+      let savedCount = 0
 
-      // Build profile data with only the fields we need to update
-      const profileData: Record<string, string> = {}
-      const fullName = formData.get('full_name') as string
-      if (fullName) profileData.full_name = fullName
+      // Individual field updates - each one succeeds or fails independently
+      // This way columns that exist get saved, missing ones are just skipped
+      const allFields = [
+        'full_name',
+        'phone',
+        'agency_name',
+        'license_number',
+        'bio',
+      ]
 
-      // Try to update each optional field individually, catching column errors
-      const optionalFields = ['phone', 'agency_name', 'license_number', 'bio']
-      for (const field of optionalFields) {
+      for (const field of allFields) {
         const value = formData.get(field) as string
-        if (value) {
-          try {
-            const { error: updateError } = await supabase
-              .from('profiles')
-              .update({ [field]: value })
-              .eq('id', user.id)
-            if (updateError) {
-              console.warn(`Column "${field}" not available:`, updateError.message)
-            }
-          } catch {
-            console.warn(`Column "${field}" not available`)
+        if (!value) continue
+
+        const { error: err } = await supabase
+          .from('profiles')
+          .update({ [field]: value })
+          .eq('id', user.id)
+
+        if (err) {
+          if (err.message?.includes("Could not find the") || err.message?.includes("column") || err.message?.includes("schema cache")) {
+            missing.push(field)
+          } else {
+            console.error(`Error saving ${field}:`, err.message)
           }
+        } else {
+          savedCount++
         }
       }
 
-      // Update full_name (this column always exists)
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update(profileData)
-        .eq('id', user.id)
-
-      if (updateError) throw updateError
-      setSuccess('Perfil actualizado correctamente')
+      if (missing.length > 0) {
+        setMissingColumns(missing)
+        setError(`Algunos campos no se guardaron: ${missing.join(', ')}. La base de datos no tiene esas columnas.`)
+      } else if (savedCount > 0) {
+        setSuccess('Perfil actualizado correctamente')
+        loadProfile()
+      }
     } catch (err: any) {
       setError(err.message || 'Error al actualizar perfil')
     } finally {
@@ -111,9 +120,41 @@ export default function DashboardSettingsPage() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8 space-y-6">
+        {/* Missing Columns Alert */}
+        {missingColumns.length > 0 && (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 shadow-sm">
+            <div className="flex items-start gap-3">
+              <Database className="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
+              <div>
+                <h3 className="font-semibold text-amber-800">Columnas faltantes en la base de datos</h3>
+                <p className="text-sm text-amber-700 mt-1">
+                  Los campos <strong>{missingColumns.join(', ')}</strong> no se guardarán hasta que agregues las columnas faltantes en Supabase.
+                  Abre Supabase Dashboard, ve a <strong>SQL Editor</strong> y ejecuta:
+                </p>
+                <pre className="mt-3 bg-amber-100 rounded-lg p-3 text-xs text-amber-900 overflow-x-auto">
+{`ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS phone text;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS agency_name text;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS license_number text;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS bio text;
+NOTIFY pgrst, 'reload schema';`}
+                </pre>
+                <a
+                  href="https://app.supabase.com/project/ichymotczbfvlyeyjgvc/sql/new"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 mt-3 text-sm font-medium text-amber-800 hover:text-amber-900 underline"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  Abrir SQL Editor de Supabase
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-8">
-          {error && (
+          {error && !missingColumns.length && (
             <div className="rounded-lg bg-red-50 border border-red-200 p-4 text-sm text-red-700">{error}</div>
           )}
           {success && (
