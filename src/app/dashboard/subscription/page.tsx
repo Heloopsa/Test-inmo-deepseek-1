@@ -52,7 +52,7 @@ const plans = [
       'Logo de agencia destacado',
     ],
     cta: 'Elegir plan',
-    ctaClass: 'bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700',
+    ctaClass: 'bg-linear-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700',
     popular: false,
     icon: Crown,
   },
@@ -82,9 +82,9 @@ export default async function SubscriptionPage() {
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         {/* Current Plan Banner */}
         <div className={`rounded-xl border p-6 mb-10 shadow-sm ${
-          currentPlan === 'premium' ? 'bg-gradient-to-r from-amber-50 to-amber-100 border-amber-200' :
-          currentPlan === 'basic' ? 'bg-gradient-to-r from-emerald-50 to-emerald-100 border-emerald-200' :
-          'bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200'
+          currentPlan === 'premium' ? 'bg-linear-to-r from-amber-50 to-amber-100 border-amber-200' :
+          currentPlan === 'basic' ? 'bg-linear-to-r from-emerald-50 to-emerald-100 border-emerald-200' :
+          'bg-linear-to-r from-gray-50 to-gray-100 border-gray-200'
         }`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -157,7 +157,7 @@ export default async function SubscriptionPage() {
                   <ul className="space-y-3 mb-8">
                     {plan.features.map((feature) => (
                       <li key={feature} className="flex items-start gap-2 text-sm text-gray-600">
-                        <CheckCircle2 className={`mt-0.5 h-4 w-4 flex-shrink-0 ${
+                        <CheckCircle2 className={`mt-0.5 h-4 w-4 shrink-0 ${
                           plan.popular ? 'text-emerald-500' : 'text-gray-400'
                         }`} />
                         {feature}
