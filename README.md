@@ -199,14 +199,14 @@ npm run lint
 - [x] Listado de propiedades con filtros
 - [x] Detalle de propiedad
 - [x] Dashboard del agente
-- [ ] CRUD completo de propiedades (crear/editar/eliminar)
-- [ ] Subida de imágenes a Supabase Storage
+- [x] CRUD completo de propiedades (crear/editar/eliminar)
+- [x] Subida de imágenes a Supabase Storage
 - [ ] Sistema de leads completo
 - [ ] Perfil de agente con reseñas
 - [ ] Integración Stripe Checkout
 - [ ] Webhook de Stripe para suscripciones
 - [ ] Tour virtual integrado
-- [ ] Mapa interactivo con Google Maps
+- [ ] Mapa interactivo con Leaflet
 - [ ] SEO optimizado
 - [ ] PWA support
 
