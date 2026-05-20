@@ -134,7 +134,7 @@ export default async function DashboardLeadsPage() {
                       )}
                     </div>
 
-                    <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                    <div className="flex flex-col items-end gap-2 shrink-0">
                       <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium ${getLeadColor(lead.status)}`}>
                         {getLeadIcon(lead.status)}
                         {lead.status === 'new' ? 'Nuevo' :

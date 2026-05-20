@@ -64,11 +64,11 @@ export default async function DashboardPropertiesPage() {
               <div key={property.id} className="rounded-xl border bg-white overflow-hidden shadow-sm hover:shadow-md transition-all">
                 <div className="flex flex-col sm:flex-row">
                   {property.photos?.[0] ? (
-                    <div className="relative h-48 w-full sm:w-56 flex-shrink-0">
+                    <div className="relative h-48 w-full sm:w-56 shrink-0">
                       <img src={property.photos[0]} alt={property.title} className="h-full w-full object-cover" />
                     </div>
                   ) : (
-                    <div className="flex h-48 w-full sm:w-56 items-center justify-center bg-gray-100 flex-shrink-0">
+                    <div className="flex h-48 w-full sm:w-56 items-center justify-center bg-gray-100 shrink-0">
                       <Home className="h-10 w-10 text-gray-400" />
                     </div>
                   )}

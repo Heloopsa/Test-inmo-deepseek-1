@@ -62,7 +62,7 @@ export default function PropertyGallery({ photos, title }: PropertyGalleryProps)
             <button
               key={index}
               onClick={() => setActiveIndex(index)}
-              className={`relative h-20 w-28 flex-shrink-0 overflow-hidden rounded-lg transition-all ${
+              className={`relative h-20 w-28 shrink-0 overflow-hidden rounded-lg transition-all ${
                 index === activeIndex
                   ? 'ring-2 ring-emerald-500 ring-offset-2 scale-105'
                   : 'opacity-60 hover:opacity-100'
