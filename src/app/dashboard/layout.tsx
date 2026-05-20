@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import DashboardSidebar from '@/components/DashboardSidebar'
+import { Analytics } from "@vercel/analytics/next"
 
 export default async function DashboardLayout({
   children,
@@ -26,6 +27,7 @@ export default async function DashboardLayout({
       <main className="lg:ml-64">
         {children}
       </main>
+      <Analytics />
     </div>
   )
 }

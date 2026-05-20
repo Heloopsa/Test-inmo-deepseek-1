@@ -18,7 +18,7 @@ export default function PropertyGallery({ photos, title }: PropertyGalleryProps)
 
   if (!photos || photos.length === 0) {
     return (
-      <div className="flex aspect-[16/9] items-center justify-center rounded-xl bg-gray-100">
+      <div className="flex aspect-video items-center justify-center rounded-xl bg-gray-100">
         <Home className="h-16 w-16 text-gray-300" />
       </div>
     )
@@ -27,7 +27,7 @@ export default function PropertyGallery({ photos, title }: PropertyGalleryProps)
   return (
     <>
       {/* Main image */}
-      <div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-gray-100 cursor-pointer group"
+      <div className="relative aspect-video overflow-hidden rounded-xl bg-gray-100 cursor-pointer group"
         onClick={() => setShowLightbox(true)}>
         <Image
           src={photos[activeIndex]}
@@ -36,7 +36,7 @@ export default function PropertyGallery({ photos, title }: PropertyGalleryProps)
           className="object-cover transition-all duration-500 group-hover:scale-105"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         <div className="absolute bottom-4 right-4 rounded-lg bg-black/60 px-3 py-1.5 text-sm text-white backdrop-blur-sm">
           {activeIndex + 1} / {photos.length}
         </div>

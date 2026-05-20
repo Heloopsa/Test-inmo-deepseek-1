@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { Plus, Home, Edit, Eye, Search, MapPin, BedDouble, Bath } from 'lucide-react'
 
@@ -65,7 +66,7 @@ export default async function DashboardPropertiesPage() {
                 <div className="flex flex-col sm:flex-row">
                   {property.photos?.[0] ? (
                     <div className="relative h-48 w-full sm:w-56 shrink-0">
-                      <img src={property.photos[0]} alt={property.title} className="h-full w-full object-cover" />
+                      <Image src={property.photos[0]} alt={property.title} fill className="object-cover" />
                     </div>
                   ) : (
                     <div className="flex h-48 w-full sm:w-56 items-center justify-center bg-gray-100 shrink-0">
