@@ -1,14 +1,16 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-const SUPABASE_URL = 'https://ichymotczbfvlyeyjgvc.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_PY0w_yX-Pg1ZFWyEnytfnA_8FtmJ1qV';
-
 export const createClient = async () => {
   const cookieStore = await cookies();
+  
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
+    throw new Error('Missing Supabase environment variables');
+  }
+  
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || SUPABASE_KEY,
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     {
       cookies: {
         getAll() {
