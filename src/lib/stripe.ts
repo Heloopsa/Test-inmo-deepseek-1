@@ -1,9 +1,17 @@
 import Stripe from 'stripe'
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2026-04-22.dahlia' as any,
-  typescript: true,
-})
+const getStripe = () => {
+  const key = process.env.STRIPE_SECRET_KEY
+  if (!key || key === 'your-stripe-secret-key-here') {
+    return null
+  }
+  return new Stripe(key, {
+    apiVersion: '2026-04-22.dahlia' as any,
+    typescript: true,
+  })
+}
+
+export const stripe = getStripe()
 
 export const STRIPE_PLANS = {
   free: {

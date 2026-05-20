@@ -59,6 +59,9 @@ export async function POST(request: Request) {
     }
 
     // Create Stripe Checkout Session
+    if (!stripe) {
+      return NextResponse.redirect(new URL('/dashboard/subscription?error=stripe-not-configured', request.url))
+    }
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       line_items: [

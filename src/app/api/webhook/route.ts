@@ -15,6 +15,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ received: true })
     }
 
+    if (!stripe) {
+      return NextResponse.json({ received: true })
+    }
+
     const event = stripe.webhooks.constructEvent(
       body,
       signature,
