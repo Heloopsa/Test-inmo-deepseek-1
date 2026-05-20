@@ -206,6 +206,7 @@ function getErrorMessage(message: string): string {
     'User not found': 'No existe una cuenta con este email',
     'Invalid credentials': 'Email o contraseña incorrectos',
     'Too many requests': 'Demasiados intentos. Por favor, intenta más tarde',
+    'Invalid API key': 'Error de configuración. Contacta al administrador.',
   }
   return messages[message] || message
 }
