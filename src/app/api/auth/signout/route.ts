@@ -5,5 +5,9 @@ export async function POST() {
   const supabase = await createClient()
   await supabase.auth.signOut()
 
-  return NextResponse.redirect(new URL('/auth/login', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'))
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
+    || (process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : null)
+    || 'http://localhost:3000'
+
+  return NextResponse.redirect(new URL('/auth/login', baseUrl))
 }

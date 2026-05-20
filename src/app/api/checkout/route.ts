@@ -32,7 +32,9 @@ export async function POST(request: Request) {
     }
 
     const plan = STRIPE_PLANS[planKey]
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
+      || (process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : null)
+      || new URL(request.url).origin
 
     // If Stripe is not configured, simulate checkout and upgrade directly
     if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY === 'your-stripe-secret-key-here') {
